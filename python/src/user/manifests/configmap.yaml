@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: employee-configmap
+data:
+  MYSQL_HOST: host.minikube.internal
+  MYSQL_USER: employee_user
+  MYSQL_DB: employee
+  MYSQL_PORT: "3306"
