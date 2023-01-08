@@ -14,6 +14,15 @@ server.config["MYSQL_PASSWORD"] = os.environ.get("MYSQL_PASSWORD")
 server.config["MYSQL_DB"] = os.environ.get("MYSQL_DB")
 server.config["MYSQL_PORT"] = os.environ.get("MYSQL_PORT")
 
+def get_access(request):
+
+    has_access, err = validate.token(request)
+
+    if err:
+        return err
+
+    has_access = json.loads(has_access)
+    return has_access
 
 @server.route("/login", methods=["POST"])
 def login():
@@ -28,12 +37,7 @@ def login():
 @server.route("/payslip", methods=["POST"])
 def get_payslip():
 
-    has_access, err = validate.token(request)
-
-    if err:
-        return err
-
-    has_access = json.loads(has_access)
+    has_access = get_access(request=request)
 
     cur = mysql.connection.cursor()
     res = cur.execute(
@@ -53,12 +57,7 @@ def get_payslip():
 @server.route("/new_employee", methods=["POST"])
 def new_employee():
 
-    has_access, err = validate.token(request)
-
-    if err:
-        return err
-
-    has_access = json.loads(has_access)
+    has_access = get_access(request=request)
 
     if has_access["admin"]:
         # allowed to create new employee
@@ -99,12 +98,7 @@ def new_employee():
 @server.route("/set_hours_worked", methods=["POST"])
 def set_hours_worked():
 
-    has_access, err = validate.token(request)
-
-    if err:
-        return err
-
-    has_access = json.loads(has_access)
+    has_access = get_access(request=request)
 
     # check that the employee to update exists and that if they do this user can edit their details.
     cur = mysql.connection.cursor()
@@ -141,12 +135,7 @@ def set_hours_worked():
 @server.route("/update_employee", methods=["POST"])
 def update_employee():
 
-    has_access, err = validate.token(request)
-
-    if err:
-        return err
-
-    has_access = json.loads(has_access)
+    has_access = get_access(request=request)
 
     if has_access["admin"]:
             
@@ -179,6 +168,42 @@ def update_employee():
         return ("User does not have permissions for this action", 401)
 
 
+@server.route("/delete_employee", methods=["POST"])
+def delete_employee():
+
+    has_access = get_access(request=request)
+
+    if has_access["admin"]:
+            
+        cur = mysql.connection.cursor()
+
+        res = cur.execute(
+            """SELECT email FROM employee WHERE email=%s""", (request.json["email"])
+        )
+
+        if res:
+
+            try:
+
+                res = cur.execute(
+                    """
+                    DELETE FROM employee
+                    WHERE email=%s
+                    """,
+                    (request.json["email"])
+                )
+
+                mysql.connection.commit()
+                return ("success", 200)
+            except:
+                mysql.connection.rollback()
+                return ("delete failed", 400)
+
+        else:
+            return ("No such employee", 404)
+
+    else:
+        return ("Unauthorised", 401)
 
 if __name__ == "__main__":
     server.run(host="0.0.0.0", port=8000)

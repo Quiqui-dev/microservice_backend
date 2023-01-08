@@ -3,6 +3,7 @@ kind: ConfigMap
 metadata:
   name: employee-configmap
 data:
+  AUTH_SVC_ADDRESS: "auth:5000"
   MYSQL_HOST: host.minikube.internal
   MYSQL_USER: employee_user
   MYSQL_DB: employee
