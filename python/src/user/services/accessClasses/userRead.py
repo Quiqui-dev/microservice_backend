@@ -16,7 +16,7 @@ class userRead:
         self.nextPK = 0
 
 
-    def getRows(self):
+    def getuserRows(self):
         return self.__duserRows
 
     def setRowCount(self, numRows):

@@ -4,4 +4,9 @@ class InsertException(Exception):
 
     def __init__(msg="", error=None):
 
-        pass
+        super(InsertException).__init__(msg=msg)
+
+
+class EntryExists(Exception):
+    pass
+

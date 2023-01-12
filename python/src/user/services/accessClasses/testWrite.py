@@ -57,7 +57,7 @@ class testWrite(testRead.testRead):
 
         defaultRow.update(dInsert)
         dInsert = defaultRow
-        dInsert["dateCreated"] = datetime.now()
+        dInsert["dateCreated"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         try:
 
@@ -68,6 +68,8 @@ class testWrite(testRead.testRead):
                 sQuery,
                 (dInsert["testpk"],dInsert["testname"])
             )
+
+            self.updateNextPK(iNextPK=nextPK)
         except Error:
             raise
 
@@ -94,7 +96,7 @@ class testWrite(testRead.testRead):
 
             dTmp = self.formatEscapeChars(dItem=dTmp)
 
-            dTmp["dateCreated"] = datetime.now()
+            dTmp["dateCreated"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
             dTmp["testpk"] = self.nextPK + 10
             self.nextPK += 10
@@ -106,6 +108,8 @@ class testWrite(testRead.testRead):
                 sQuery,
                 lPrepInsert
             )
+
+            self.updateNextPK(iNextPK=self.nextPK)
         except Error:
             raise
 

@@ -16,7 +16,7 @@ class testRead:
         self.nextPK = 0
 
 
-    def getRows(self):
+    def gettestRows(self):
         return self.__dtestRows
 
     def setRowCount(self, numRows):
